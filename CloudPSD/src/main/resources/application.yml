@@ -1,0 +1,26 @@
+server:
+  port: 8085
+  ssl:
+    key-store: classpath:ServerKeyStore.jks
+    key-store-password: server123
+    keyStoreType: JKS
+    keyAlias: server
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: admin123
+    driverClassName: org.postgresql.Driver
+    platform: postgres
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+app:
+  serverAddress: "https://localhost:8080"
+
+trust-store: classpath:ServerTrustStore.jks
+trust-store-password: server123

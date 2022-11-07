@@ -1,0 +1,17 @@
+
+keytool -genkey -alias bruno -keyalg RSA -keystore bruno_keystore.jks -keysize 2048
+keytool -export -alias bruno -keystore bruno_keystore.jks -file bruno.cert
+keytool -import -file bruno.cert -alias bruno -keystore bruno_truststore.jks
+
+
+
+keytool -genkey -alias jose -keyalg RSA -keystore jose_keystore.jks -keysize 2048
+keytool -export -alias jose -keystore jose_keystore.jks -file jose.cert
+keytool -import -file jose.cert -alias jose -keystore jose_truststore.jks
+
+keytool -genkey -alias miguel -keyalg RSA -keystore miguel_keystore.jks -keysize 2048
+keytool -export -alias miguel -keystore miguel_keystore.jks -file miguel.cert
+keytool -import -file miguel.cert -alias miguel -keystore miguel_truststore.jks
+
+
+bruno123

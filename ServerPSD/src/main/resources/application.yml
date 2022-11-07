@@ -1,0 +1,28 @@
+server:
+  port: 8080
+  ssl:
+    key-store: classpath:ServerKeyStore.jks
+    key-store-password: server123
+    keyStoreType: JKS
+    keyAlias: server
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: admin123
+    driverClassName: org.postgresql.Driver
+    platform: postgres
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+jwt:
+  refresh-secret: q70e5wY42et7V29LBpL6kGaSkyuDoDhMmc9fzG2HSZPKpzMcxn7laDEDNJihxB0
+  access-secret: (G-KaPdSgVkYp3s6v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x
+
+#https://feilerdev.wordpress.com/2017/12/05/installing-postgresql-on-windows-using-zip-archive-without-the-installer/
+#https://www.enterprisedb.com/download-postgresql-binaries
+#pg_ctl.exe start -D ../data

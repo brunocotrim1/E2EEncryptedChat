@@ -1,0 +1,14 @@
+server:
+  port: 8081
+  ssl:
+    key-store: classpath:bruno_keystore.jks
+    key-store-password: bruno123
+    keyStoreType: JKS
+    keyAlias: bruno
+app:
+  serverAddress: "https://localhost:8080"
+  user: bruno
+  password: bruno123
+  cloudAddress: "https://localhost:8085"
+trust-store: classpath:ServerTrustStore.jks
+trust-store-password: server123

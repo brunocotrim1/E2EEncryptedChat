@@ -1,0 +1,14 @@
+server:
+  port: 8083
+  ssl:
+    key-store: classpath:jose_keystore.jks
+    key-store-password: jose123
+    keyStoreType: JKS
+    keyAlias: jose
+app:
+  serverAddress: "https://localhost:8080"
+  user: jose
+  password: jose123
+  cloudAddress: "https://localhost:8085"
+trust-store: classpath:ServerTrustStore.jks
+trust-store-password: server123

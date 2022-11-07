@@ -1,0 +1,15 @@
+server:
+  port: 8082
+  ssl:
+    key-store: classpath:miguel_keystore.jks
+    key-store-password: miguel123
+    keyStoreType: JKS
+    keyAlias: miguel
+app:
+  serverAddress: "https://localhost:8080"
+  user: miguel
+  password: miguel123
+  cloudAddress: "https://localhost:8085"
+
+trust-store: classpath:ServerTrustStore.jks
+trust-store-password: server123
