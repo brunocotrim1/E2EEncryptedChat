@@ -13,7 +13,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="ClientPSD" options="-parameters" />
+      <module name="ClientPSD" options="-parameters -extdirs &quot;C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD/lib&quot;" />
     </option>
   </component>
 </project>

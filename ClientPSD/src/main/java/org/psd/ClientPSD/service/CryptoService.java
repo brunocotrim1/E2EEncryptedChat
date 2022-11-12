@@ -160,7 +160,6 @@ public class CryptoService {
             log.info("Share received from server");
             return response.getBody();
         } catch (Exception exception) {
-            exception.printStackTrace();
             return null;
         }
     }
@@ -189,7 +188,6 @@ public class CryptoService {
             log.info("Share sent to Cloud");
             return true;
         } catch (Exception exception) {
-            exception.printStackTrace();
             return false;
         }
     }

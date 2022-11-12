@@ -11,7 +11,7 @@ import lombok.Data;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.psd.ClientPSD.configuration.Properties;
 import org.psd.ClientPSD.model.IBEFriendEncapsulation;
-import org.springframework.core.io.Resource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
@@ -29,16 +29,13 @@ public class IBECypherService
     PairingKeySerParameter publicKey;
     IBEEngine engine;
     PairingParameters pairingParameters;
-    ResourceLoader resourceLoader;
 
     Properties properties;
-    public IBECypherService(ResourceLoader resourceLoader,Properties properties) throws IOException {
+    public IBECypherService(Properties properties) throws IOException {
         this.properties = properties;
-        this.resourceLoader = resourceLoader;
-        this.resourceLoader = resourceLoader;
-        Resource resource = resourceLoader.getResource("classpath:a_160_512.properties");
         engine = IBEBF01aEngine.getInstance();
-        pairingParameters = PairingFactory.getPairingParameters(resource.getURI().getPath());
+        ClassPathResource cpr = new ClassPathResource("a_160_512.properties");
+        pairingParameters = PairingFactory.getPairingParameters(cpr.getPath());
     }
 
     public IBEFriendEncapsulation encapsulateKey(String user){

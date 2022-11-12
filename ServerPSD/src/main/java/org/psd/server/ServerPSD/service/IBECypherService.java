@@ -6,10 +6,8 @@ import cn.edu.buaa.crypto.encryption.ibe.IBEEngine;
 import cn.edu.buaa.crypto.encryption.ibe.bf01a.IBEBF01aEngine;
 import it.unisa.dia.gas.jpbc.PairingParameters;
 import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
-import org.apache.commons.lang3.SerializationUtils;
 import org.psd.server.ServerPSD.model.network.IBEKeySharing;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -24,14 +22,10 @@ public class IBECypherService {
     private PairingParameters pairingParameters;
 
     private PairingKeySerPair keyPair;
-
-    ResourceLoader resourceLoader;
-
-    public IBECypherService(  ResourceLoader resourceLoader) throws IOException {
-        this.resourceLoader = resourceLoader;
-        Resource resource = resourceLoader.getResource("classpath:a_160_512.properties");
+    public IBECypherService() {
+        ClassPathResource cpr = new ClassPathResource("a_160_512.properties");
         engine = IBEBF01aEngine.getInstance();
-        pairingParameters =  PairingFactory.getPairingParameters(resource.getURI().getPath());
+        pairingParameters =  PairingFactory.getPairingParameters(cpr.getPath());
         keyPair = engine.setup(pairingParameters);
     }
 

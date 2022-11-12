@@ -13,7 +13,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="ServerPSD" options="-parameters" />
+      <module name="ServerPSD" options="-parameters -extdirs &quot;C:\Users\Bruno Cotrim\IdeaProjects\PSD\ServerPSD/lib&quot;" />
     </option>
   </component>
 </project>
