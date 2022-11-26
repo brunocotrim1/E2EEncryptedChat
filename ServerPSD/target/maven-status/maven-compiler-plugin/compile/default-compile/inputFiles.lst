@@ -20,6 +20,7 @@ C:\Users\Bruno Cotrim\IdeaProjects\PSD\ServerPSD\src\main\java\org\psd\server\Se
 C:\Users\Bruno Cotrim\IdeaProjects\PSD\ServerPSD\src\main\java\org\psd\server\ServerPSD\service\IBECypherService.java
 C:\Users\Bruno Cotrim\IdeaProjects\PSD\ServerPSD\src\main\java\org\psd\server\ServerPSD\service\UserService.java
 C:\Users\Bruno Cotrim\IdeaProjects\PSD\ServerPSD\src\main\java\org\psd\server\ServerPSD\exceptions\ExceptionAdvice.java
+C:\Users\Bruno Cotrim\IdeaProjects\PSD\ServerPSD\src\main\java\org\psd\server\ServerPSD\model\Message.java
 C:\Users\Bruno Cotrim\IdeaProjects\PSD\ServerPSD\src\main\java\org\psd\server\ServerPSD\security\jwt\AuthTokenFilter.java
 C:\Users\Bruno Cotrim\IdeaProjects\PSD\ServerPSD\src\main\java\org\psd\server\ServerPSD\service\ShareService.java
 C:\Users\Bruno Cotrim\IdeaProjects\PSD\ServerPSD\src\main\java\org\psd\server\ServerPSD\controllers\AuthController.java

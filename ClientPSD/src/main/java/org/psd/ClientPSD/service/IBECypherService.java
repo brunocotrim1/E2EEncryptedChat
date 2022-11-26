@@ -12,7 +12,6 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.psd.ClientPSD.configuration.Properties;
 import org.psd.ClientPSD.model.IBEFriendEncapsulation;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -41,7 +40,7 @@ public class IBECypherService
     public IBEFriendEncapsulation encapsulateKey(String user){
         PairingKeyEncapsulationSerPair encapsulationPair = engine.encapsulation(publicKey, user);
         byte[] sessionKey = encapsulationPair.getSessionKey();
-        SecretKey k1 = new SecretKeySpec(Arrays.copyOfRange(sessionKey, 0, 16), "AES");
+        SecretKey k1 = new SecretKeySpec(Arrays.copyOfRange(sessionKey, 0, 16), "AES/GCM/NoPadding");
         String secretKeyHeaderSer = serialize(encapsulationPair.getHeader());
         return new IBEFriendEncapsulation(k1, secretKeyHeaderSer);
     }
@@ -49,7 +48,7 @@ public class IBECypherService
     public SecretKey decapsulateKey(String header) throws InvalidCipherTextException {
         PairingCipherSerParameter secretKeyHeader = deSerialize(header);
         byte[] anSessionKey = engine.decapsulation(publicKey, secretKey,properties.getUser(), secretKeyHeader);
-        return new SecretKeySpec(Arrays.copyOfRange(anSessionKey, 0, 16), "AES");
+        return new SecretKeySpec(Arrays.copyOfRange(anSessionKey, 0, 16), "AES/GCM/NoPadding");
     }
 
     private String serialize(PairingCipherSerParameter key) {

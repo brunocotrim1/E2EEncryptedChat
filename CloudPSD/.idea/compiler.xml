@@ -13,7 +13,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="CloudPSD" options="-parameters -extdirs &quot;C:\Users\Bruno Cotrim\IdeaProjects\PSD\CloudPSD/lib&quot;" />
+      <module name="CloudPSD" options="-parameters" />
     </option>
   </component>
 </project>

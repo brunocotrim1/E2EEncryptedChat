@@ -65,21 +65,21 @@
             <artifactId>CloudCrypto</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/CloudCrypto-1.0-SNAPSHOT.jar</systemPath>
+            <systemPath>${basedir}/src/main/resources/lib/CloudCrypto-1.0-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>it.unisa.dia.gas</groupId>
             <artifactId>jpbc</artifactId>
             <version>2.0.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jpbc-2.0.0.jar</systemPath>
+            <systemPath>${basedir}/src/main/resources/lib/jpbc-2.0.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>it.unisa.dia.gas</groupId>
             <artifactId>jpbc-plaf</artifactId>
             <version>2.0.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jpbc-plaf-2.0.0.jar</systemPath>
+            <systemPath>${basedir}/src/main/resources/lib/jpbc-plaf-2.0.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -89,6 +89,12 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.54</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
     <build>
@@ -104,24 +110,6 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <compilerArguments>
-                        <extdirs>${project.basedir}/lib</extdirs>
-                    </compilerArguments>
                 </configuration>
             </plugin>
         </plugins>

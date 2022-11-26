@@ -38,7 +38,7 @@ public class SecretSharing {
     public static SecretKey combineKeyShares(Share[] shares){
         BigInteger recoveredSecret = combine(shares);
         byte [] secretBytes1 =Base64.getDecoder().decode(recoveredSecret.toByteArray());
-        return new SecretKeySpec(secretBytes1, 0,secretBytes1.length, "AES/CBC/PKCS5Padding");
+        return new SecretKeySpec(secretBytes1, 0,secretBytes1.length, "AES");
     }
 
     private static SecretKey generateKey(){
@@ -46,17 +46,10 @@ public class SecretSharing {
         byte[] data = new byte[16]; // 16 * 8 = 128 bit
         rnd.nextBytes(data);
         BigInteger bigInt = new BigInteger(data).abs();
-        return new SecretKeySpec(bigInt.toByteArray(), 0,bigInt.toByteArray().length, "AES/CBC/PKCS5Padding");
+        return new SecretKeySpec(bigInt.toByteArray(), 0,bigInt.toByteArray().length, "AES");
     }
 
 
-    private static void testKey(SecretKey key) throws InvalidAlgorithmParameterException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        IvParameterSpec iv = generateIv();
-        String c = encrypt("AES/CBC/PKCS5Padding",key,iv,"ola");
-        System.out.println(c);
-        System.out.println(decrypt("AES/CBC/PKCS5Padding",key,iv,c));
-
-    }
 
 
     public static IvParameterSpec generateIv() {

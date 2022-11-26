@@ -6,19 +6,30 @@ server:
     keyStoreType: JKS
     keyAlias: server
 
+#spring:
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/postgres
+#    username: postgres
+#    password: admin123
+#    driverClassName: org.postgresql.Driver
+#    platform: postgres
+#  jpa:
+#    database-platform: org.hibernate.dialect.PostgreSQLDialect
+#    hibernate:
+#      ddl-auto: create-drop
+#    show-sql: false
+
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: admin123
-    driverClassName: org.postgresql.Driver
-    platform: postgres
+    url: jdbc:h2:file:./data/serverPSD
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
     show-sql: false
-
 jwt:
   refresh-secret: q70e5wY42et7V29LBpL6kGaSkyuDoDhMmc9fzG2HSZPKpzMcxn7laDEDNJihxB0
   access-secret: (G-KaPdSgVkYp3s6v9y$B&E)H@MbQeThWmZq4t7w!z%C*F-JaNdRfUjXn2r5u8x

@@ -37,21 +37,21 @@
             <artifactId>CloudCrypto</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/CloudCrypto-1.0-SNAPSHOT.jar</systemPath>
+            <systemPath>${basedir}/src/main/resources/lib/CloudCrypto-1.0-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>it.unisa.dia.gas</groupId>
             <artifactId>jpbc</artifactId>
             <version>2.0.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jpbc-2.0.0.jar</systemPath>
+            <systemPath>${basedir}/src/main/resources/lib/jpbc-2.0.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>it.unisa.dia.gas</groupId>
             <artifactId>jpbc-plaf</artifactId>
             <version>2.0.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/lib/jpbc-plaf-2.0.0.jar</systemPath>
+            <systemPath>${basedir}/src/main/resources/lib/jpbc-plaf-2.0.0.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -97,24 +97,7 @@
                 </configuration>
             </plugin>
         </plugins>
-<!--        <resources>-->
-<!--            <resource>-->
-<!--                <directory>lib</directory>-->
-<!--                <targetPath>BOOT-INF/lib/</targetPath>-->
-<!--                <includes>-->
-<!--                    <include>**/*.jar</include>-->
-<!--                </includes>-->
-<!--            </resource>-->
-<!--            <resource>-->
-<!--                <directory>src/main/resources</directory>-->
-<!--                <includes>-->
-<!--                    <include>**/*.yml</include>-->
-<!--                    <include>**/*.jks</include>-->
-<!--                    <include>**/*.properties</include>-->
-<!--                </includes>-->
-<!--                <targetPath>BOOT-INF/classes/</targetPath>-->
-<!--            </resource>-->
-<!--        </resources>-->
+
     </build>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

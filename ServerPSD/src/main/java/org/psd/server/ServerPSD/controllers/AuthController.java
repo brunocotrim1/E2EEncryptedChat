@@ -24,7 +24,7 @@ class AuthController {
 
     @PostMapping("/register")
     ResponseEntity<? > registration(@RequestBody SignupRequest request) {
-        accountService.register(request.getUsername(), request.getPassword());
+        accountService.register(request.getUsername(), request.getPassword(),request.getAddress());
         log.info("User registered: " + request.getUsername());
         return ResponseEntity.ok("User registered Successfully");
     }
@@ -43,8 +43,13 @@ class AuthController {
     @GetMapping("/verify/{token}")
     ResponseEntity<? > verify(@PathVariable String token) throws IOException {
         String username= accountService.verifyToken(token);
-        System.out.println(username);
         return !username.isEmpty() ? ResponseEntity.ok(username) : ResponseEntity.badRequest().body("Invalid token");
+    }
+
+    @GetMapping("/address/{id}")
+    ResponseEntity<? > getAddress(@PathVariable String id) throws IOException {
+        String address= accountService.getAddress(id);
+        return address != null? ResponseEntity.ok(address) : ResponseEntity.notFound().build();
     }
 
 }

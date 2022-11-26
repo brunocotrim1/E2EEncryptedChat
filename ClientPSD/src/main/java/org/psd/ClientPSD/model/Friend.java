@@ -1,12 +1,13 @@
 package org.psd.ClientPSD.model;
 
-import cn.edu.buaa.crypto.algebra.serparams.PairingCipherSerParameter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.psd.ClientPSD.model.network.MessageDTO;
 
 import javax.crypto.SecretKey;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -20,6 +21,7 @@ public class Friend {
     private Share share;
     private SecretKey secretKey;
     private String headerSecretKey;
+    private List<MessageDTO> messages;
 
     @Override
     public boolean equals(Object o) {

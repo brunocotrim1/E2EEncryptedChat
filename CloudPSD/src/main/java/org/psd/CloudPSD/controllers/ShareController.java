@@ -2,8 +2,8 @@ package org.psd.CloudPSD.controllers;
 
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.psd.CloudPSD.models.Share;
+import org.psd.CloudPSD.models.network.MessageDTO;
 import org.psd.CloudPSD.models.network.ShareDTO;
 import org.psd.CloudPSD.service.ShareService;
 import org.psd.CloudPSD.service.ValidationService;
@@ -42,7 +42,7 @@ public class ShareController {
 
     @DeleteMapping("/share/{user1}")
     public ResponseEntity<?> deleteShare(@PathVariable String user1,@RequestHeader("Authorization") String bearerToken) {
-        String user2 = validationService.verifyToken(bearerToken.substring(7, bearerToken.length()));
+        String user2 = validationService.verifyToken(bearerToken);
         if(user2 == null)
             return ResponseEntity.badRequest().build();
         Share share = shareService.getShareByUsers(user1,user2);
@@ -51,6 +51,19 @@ public class ShareController {
         return share == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(share.toShareDto());
     }
 
+    @PostMapping("/receive/message")
+    public ResponseEntity<?> storeMessage(@RequestBody MessageDTO messageDTO,@RequestHeader("Authorization") String bearerToken) {
 
-
+        String user = validationService.verifyToken(bearerToken);
+        if(user == null)
+            return ResponseEntity.badRequest().build();
+        return shareService.storeMessage(messageDTO,user) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
+    @GetMapping("/messages/{user1}")
+    public ResponseEntity<?> getMessage(@PathVariable String user1,@RequestHeader("Authorization") String bearerToken) {
+        String user2 = validationService.verifyToken(bearerToken);
+        if(user2 == null)
+            return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(shareService.getMessages(user1,user2));
+    }
 }

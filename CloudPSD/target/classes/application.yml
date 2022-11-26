@@ -8,13 +8,12 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: admin123
-    driverClassName: org.postgresql.Driver
-    platform: postgres
+    url: jdbc:h2:file:./data/serverPSD
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
     show-sql: false

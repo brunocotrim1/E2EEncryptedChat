@@ -10,6 +10,6 @@ app:
   user: miguel
   password: miguel123
   cloudAddress: "https://localhost:8085"
-
+  address: "https://localhost:8082"
 trust-store: classpath:ServerTrustStore.jks
 trust-store-password: server123

@@ -28,7 +28,7 @@ public class UserService implements UserDetailsService {
     public UserService(IUsersRepository usersRepository,PasswordEncoder encoder) {
         this.usersRepository = usersRepository;
         this.encoder = encoder;
-        this.usersRepository.save(new User("admin", encoder.encode("admin")));
+        //this.usersRepository.save(new User("admin", encoder.encode("admin")));
     }
 
     public User getUser(String username) {

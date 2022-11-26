@@ -16,4 +16,5 @@ public class Properties {
     String user;
     String password;
     String cloudAddress;
+    String address;
 }

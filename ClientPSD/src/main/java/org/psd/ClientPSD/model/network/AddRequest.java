@@ -11,5 +11,4 @@ import lombok.NoArgsConstructor;
 @Builder
 public class AddRequest {
     private String username;
-    private String address;
 }

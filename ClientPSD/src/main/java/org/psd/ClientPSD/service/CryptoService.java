@@ -7,16 +7,23 @@ import org.psd.ClientPSD.crypto.SecretSharing;
 import org.psd.ClientPSD.model.Friend;
 import org.psd.ClientPSD.model.IBEFriendEncapsulation;
 import org.psd.ClientPSD.model.Share;
+import org.psd.ClientPSD.model.network.MessageDTO;
+import org.psd.ClientPSD.model.network.MessageUI;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.crypto.SecretKey;
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import java.security.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -38,12 +45,16 @@ public class CryptoService {
     }
 
 
-    public void addFriend(String user, String address) {
+    public boolean addFriend(String user) {
+        String address = getUserAddress(user);
+        if(address == null){
+            return false;
+        }
         if(friends.get(user)!=null){
             log.info("Friend already added");
-            return;
+            return false;
         }
-        Friend friend = Friend.builder().address(address).username(user).build();
+        Friend friend = Friend.builder().address(address).username(user).messages(new ArrayList<>()).build();
         friends.put(user, friend);
         if(requestSecretKeyHeaders(user,address)){
             System.out.println("Secret key headers received "+Base64.getEncoder().encodeToString(friend.getSecretKey().getEncoded()));
@@ -52,7 +63,8 @@ public class CryptoService {
             sendShareToFriend(user,shares[0]);
             sendShareToServer(user,shares[1]);
             sendShareToCloud(user,shares[3]);
-            return;
+            restoreMessages(friend.getUsername());
+            return true;
         }
         Share[] sharesToCombine = getSharesToReconstruct(user);
 
@@ -61,11 +73,18 @@ public class CryptoService {
             friend.setHeaderSecretKey(ibeFriendEncapsulation.getSecretKeyHeader());
             friend.setSecretKey(ibeFriendEncapsulation.getSecretKey());
             System.out.println("Secret key: " + Base64.getEncoder().encodeToString(friend.getSecretKey().getEncoded()));
+            restoreMessages(friend.getUsername());
         }else{
             SecretKey secretKey = SecretSharing.combineKeyShares(sharesToCombine);
-            System.out.println(Base64.getEncoder().encodeToString(secretKey.getEncoded()));
+            log.info("Secret key reconstructed: "+Base64.getEncoder().encodeToString(secretKey.getEncoded()));
+            friend.setSecretKey(secretKey);
+            restoreMessages(friend.getUsername());
         }
+        return true;
     }
+
+
+
 
     private Share[] getSharesToReconstruct(String user){
         List<Share> sharesToCombine = new ArrayList();
@@ -137,7 +156,7 @@ public class CryptoService {
     private Share requestFriendShare(String user2){
         try {
             ResponseEntity<Share> response = restTemplate.exchange(friends.get(user2).getAddress() + "/share", HttpMethod.GET, authenticationSetup.getHeader(), Share.class);
-           log.info("Share received from friend");
+            log.info("Share received from friend");
             return response.getBody();
         } catch (Exception exception) {
             return null;
@@ -154,6 +173,43 @@ public class CryptoService {
         }
     }
 
+    private boolean requestCloudMessages(String user2){
+        try {
+            ResponseEntity<List<MessageDTO>> response = restTemplate.exchange(properties.getCloudAddress() + "/messages/"+user2, HttpMethod.GET, authenticationSetup.getHeader(), new ParameterizedTypeReference<List<MessageDTO>>() {});
+            if(response.getBody() == null)
+                return false;
+            if(response.getBody().size() == 0)
+                return false;
+            friends.get(user2).setMessages(response.getBody());
+            log.info("Messages received from cloud:"+response.getBody().toString());
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+    private boolean requestFriendMessages(String user2){
+        try {
+            ResponseEntity<List<MessageDTO>> response = restTemplate.exchange(friends.get(user2).getAddress() + "/messages", HttpMethod.GET, authenticationSetup.getHeader(), new ParameterizedTypeReference<List<MessageDTO>>() {});
+            if(response.getBody() == null)
+                return false;
+            if(response.getBody().size() == 0)
+                return false;
+            friends.get(user2).setMessages(response.getBody());
+            log.info("Messages received from friend:"+response.getBody().toString());
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
+    private void restoreMessages(String user2){
+        if(requestFriendMessages(user2))
+            return;
+        requestCloudMessages(user2);
+    }
+
+
+
     private Share requestCloudShare(String user2){
         try {
             ResponseEntity<Share> response = restTemplate.exchange(properties.getCloudAddress() + "/share/"+user2, HttpMethod.GET, authenticationSetup.getHeader(), Share.class);
@@ -161,14 +217,6 @@ public class CryptoService {
             return response.getBody();
         } catch (Exception exception) {
             return null;
-        }
-    }
-
-    public void addShare(Share share) {
-        String friendName = getFriend(share.getUser1(),share.getUser2());
-        Friend friend = friends.get(friendName);
-        if(friend != null){
-            friend.setShare(share);
         }
     }
     public Share getShare(String user1, String user2) {
@@ -212,5 +260,125 @@ public class CryptoService {
             return false;
         }
     }
+
+    public String getUserAddress(String user){
+        try {
+            ResponseEntity<?> response = restTemplate.exchange(properties.getServerAddress() + "/api/auth//address/"+user, HttpMethod.GET, authenticationSetup.getHeader(), String.class);
+
+            log.info(response.getBody().toString());
+            return response.getBody().toString();
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    public MessageDTO sendMessage(String message, String receiver) {
+        Friend friend = friends.get(receiver);
+        if(friend == null)
+            return null;
+        try {
+            log.info("Sending encrypted message to friend");
+            IvParameterSpec iv = generateIv();
+            String encryptedMessage = encrypt(message, receiver,iv);
+            MessageDTO messageDTO = MessageDTO.builder()
+                    .receiver(receiver)
+                    .sender(properties.getUser())
+                    .content(encryptedMessage)
+                    .timestamp(Instant.now())
+                    .iv(iv.getIV())
+                    .build();
+            if(sendMessage(friend.getAddress(),messageDTO)){
+                log.info("Message sent to friend");
+            }
+            if(sendMessage(properties.getCloudAddress(),messageDTO)){
+                log.info("Message sent to cloud");
+            }
+            friend.getMessages().add(messageDTO);
+            return messageDTO;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public boolean sendMessage(String receiverAddress,MessageDTO message) {
+        try {
+            ResponseEntity<?> response = restTemplate.exchange(receiverAddress+ "/receive/message",
+                    HttpMethod.POST, authenticationSetup.getHeader(message), String.class);
+            log.info("Message sent to"+receiverAddress);
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
+    public boolean receiveMessage(MessageDTO messageDTO, String user2) {
+        Friend friend = friends.get(user2);
+        if (friend == null)
+            return false;
+        friend.getMessages().add(messageDTO);
+        return true;
+    }
+    public String encrypt(String message,String receiver, IvParameterSpec iv)
+            throws NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException {
+
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+        cipher.init(Cipher.ENCRYPT_MODE, friends.get(receiver).getSecretKey(), iv);
+        byte[] cipherText = cipher.doFinal(message.getBytes());
+
+        return Base64.getEncoder().encodeToString(cipherText);
+    }
+
+
+    public static IvParameterSpec generateIv() {
+        byte[] iv = new byte[16];
+        new SecureRandom().nextBytes(iv);
+        return new IvParameterSpec(iv);
+    }
+
+
+    public List<MessageUI> getMessages(String user2) {
+        Friend friend = friends.get(user2);
+        if(friend == null)
+            return null;
+        List<MessageDTO> messages = friend.getMessages();
+
+        return messages.stream().map(message -> {
+            log.info("Encrypted message: "+ message);
+            MessageUI messageUI = decrypt(message,friend.getSecretKey());
+            log.info("Decrypted message: "+messageUI);
+            return messageUI;
+        }).collect(Collectors.toList());
+    }
+
+    public List<MessageDTO> getMessagesDTO(String user2) {
+        Friend friend = friends.get(user2);
+        if(friend == null)
+            return null;
+        log.info("Sending bulk messages to friend:"+friend.getMessages());
+        return friend.getMessages();
+    }
+
+
+    public MessageUI decrypt(MessageDTO message,SecretKey secretKey) {
+        try {
+
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(message.getIv()));
+            byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(message.getContent()));
+
+            return MessageUI.builder()
+                    .content(new String(plainText))
+                    .sender(message.getSender())
+                    .receiver(message.getReceiver())
+                    .timestamp(message.getTimestamp())
+                    .build();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
 
 }

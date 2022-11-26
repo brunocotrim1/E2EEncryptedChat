@@ -41,7 +41,7 @@ public class AuthenticationSetup {
 
 
     public void register() {
-        SignupRequest request = new SignupRequest(properties.getUser(), properties.getPassword());
+        SignupRequest request = new SignupRequest(properties.getUser(), properties.getPassword(),properties.getAddress());
         try{
             ResponseEntity<?> response = restTemplate.postForEntity(properties.getServerAddress() + "/api/auth/register", request, String.class);
         }
@@ -69,7 +69,7 @@ public class AuthenticationSetup {
     }
 
     public void login() {
-        SignupRequest request = new SignupRequest(properties.getUser(), properties.getPassword());
+        SignupRequest request = new SignupRequest(properties.getUser(), properties.getPassword(),null);
         ResponseEntity<SigninResponse> response = restTemplate.postForEntity(properties.getServerAddress() + "/api/auth/login", request, SigninResponse.class);
         if (response.getStatusCode().equals(HttpStatus.OK)) {
             refreshToken = response.getBody().getRefreshToken();

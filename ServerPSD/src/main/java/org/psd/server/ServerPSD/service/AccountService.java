@@ -26,8 +26,8 @@ public class AccountService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    public void register(String username, String password) {
-        User user = userService.addUser(new User(username, password));
+    public void register(String username, String password,String address) {
+        User user = userService.addUser(new User(username, password,address));
     }
 
     @Transactional
@@ -67,5 +67,10 @@ public class AccountService {
 
     public String verifyToken(String token) {
         return tokenService.verifyToken(token);
+    }
+
+    public String getAddress(String id) {
+        User user = userService.getUser(id);
+        return user == null ? null : user.getAddress();
     }
 }
