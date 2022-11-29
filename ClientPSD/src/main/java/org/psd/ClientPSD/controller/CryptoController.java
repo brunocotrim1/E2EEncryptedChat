@@ -47,7 +47,6 @@ public class CryptoController {
 
     @PostMapping("/send/message/{user2}")
     public ResponseEntity<?> sendMessage(@PathVariable String user2, @RequestBody String message) {
-
         if(user2 == null)
             return ResponseEntity.badRequest().build();
         MessageDTO messageDTO = cryptoService.sendMessage(message, user2);

@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +18,8 @@ import java.util.List;
 public class GroupChat {
     @Id
     private int id;
-
     @ElementCollection
     private List<String> participants= new ArrayList<String>();
-
     @Column(unique=true)
     private String name;
     @Lob

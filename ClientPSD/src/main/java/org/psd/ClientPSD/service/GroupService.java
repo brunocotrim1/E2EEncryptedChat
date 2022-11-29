@@ -5,7 +5,6 @@ import cn.edu.buaa.crypto.algebra.serparams.PairingKeySerPair;
 import cn.edu.buaa.crypto.algebra.serparams.PairingKeySerParameter;
 import cn.edu.buaa.crypto.encryption.abe.kpabe.KPABEEngine;
 import cn.edu.buaa.crypto.encryption.abe.kpabe.gpsw06a.KPABEGPSW06aEngine;
-import cn.edu.buaa.crypto.encryption.ibe.IBEEngine;
 import it.unisa.dia.gas.jpbc.PairingParameters;
 import it.unisa.dia.gas.plaf.jpbc.pairing.PairingFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -14,16 +13,24 @@ import org.psd.ClientPSD.configuration.Properties;
 import org.psd.ClientPSD.model.Group;
 import org.psd.ClientPSD.model.network.ABEKeySharing;
 import org.psd.ClientPSD.model.network.CreateGroup;
+import org.psd.ClientPSD.model.network.MessageDTO;
+import org.psd.ClientPSD.model.network.MessageUI;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
+import java.security.*;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -34,6 +41,9 @@ public class GroupService {
     private final AuthenticationSetup authenticationSetup;
     private HashMap<String, Group> groups= new HashMap<>();
     private KPABEEngine engine = KPABEGPSW06aEngine.getInstance();
+
+
+
     public GroupService(RestTemplate restTemplate, Properties properties, AuthenticationSetup authenticationSetup){
         this.restTemplate = restTemplate;
         this.properties = properties;
@@ -69,12 +79,41 @@ public class GroupService {
                             String.valueOf(Math.abs(properties.getUser().hashCode()) % 50)},
                     header);
             log.info("Group Key: "+ Base64.getEncoder().encodeToString(anSessionKey));
+            Group group = Group.builder()
+                    .name(name)
+                    .participantsAddresses(addresses)
+                    .key(new SecretKeySpec(Arrays.copyOfRange(anSessionKey, 0, 16), "AES/GCM/NoPadding"))
+                    .messages(new ArrayList<>())
+                    .build();
+            groups.put(name, group);
+            requestCloudMessages(name);
             return ResponseEntity.ok().build();
         } catch (Exception exception) {
             exception.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
         }
     }
+
+
+
+
+
+    private boolean requestCloudMessages(String group){
+        try {
+            ResponseEntity<List<MessageDTO>> response = restTemplate.exchange(properties.getCloudAddress() + "/messages/group/"+group
+                    , HttpMethod.GET, authenticationSetup.getHeader(), new ParameterizedTypeReference<List<MessageDTO>>() {});
+            if(response.getBody() == null)
+                return false;
+            if(response.getBody().size() == 0)
+                return false;
+            groups.get(group).getMessages().addAll(response.getBody());
+            log.info("Messages received from cloud:"+response.getBody().toString());
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
 
     public <T> T deSerialize(String serializedKey){
         final byte[] bytes = Base64.getDecoder().decode(serializedKey.getBytes());
@@ -94,4 +133,98 @@ public class GroupService {
         }
     }
 
+    public ResponseEntity sendMessage(String message, String groupName) {
+        Group group = groups.get(groupName);
+        if(group == null)
+            return ResponseEntity.notFound().build();
+        try {
+            log.info("Sending encrypted message to friend");
+            IvParameterSpec iv = generateIv();
+            String encryptedMessage = encrypt(message, groupName,iv);
+            MessageDTO messageDTO = MessageDTO.builder()
+                    .receiver(groupName)
+                    .sender(properties.getUser())
+                    .content(encryptedMessage)
+                    .timestamp(Instant.now())
+                    .iv(iv.getIV())
+                    .build();
+            for(String address : group.getParticipantsAddresses()){
+                if(address.equals(properties.getUser()))
+                    continue;
+                sendMessage(address, messageDTO);
+                log.info("Message sent to: "+address);
+            }
+            if(sendMessage(properties.getCloudAddress(),messageDTO)){
+                log.info("Message sent to cloud");
+            }
+            group.getMessages().add(messageDTO);
+            return ResponseEntity.ok().body(messageDTO);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    public ResponseEntity<?> receiveGroupMsg(MessageDTO messageDTO){
+        Group group = groups.get(messageDTO.getReceiver());
+        if(group == null)
+            return ResponseEntity.notFound().build();
+        log.info("Received group message: "+messageDTO);
+        group.getMessages().add(messageDTO);
+        return ResponseEntity.ok("Message received from group: "+messageDTO.getReceiver());
+    }
+
+
+    public static IvParameterSpec generateIv() {
+        byte[] iv = new byte[16];
+        new SecureRandom().nextBytes(iv);
+        return new IvParameterSpec(iv);
+    }
+    public MessageUI decrypt(MessageDTO message, SecretKey secretKey) {
+        try {
+
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(message.getIv()));
+            byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(message.getContent()));
+
+            return MessageUI.builder()
+                    .content(new String(plainText))
+                    .sender(message.getSender())
+                    .receiver(message.getReceiver())
+                    .timestamp(message.getTimestamp())
+                    .build();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public String encrypt(String message,String group, IvParameterSpec iv)
+            throws NoSuchPaddingException, NoSuchAlgorithmException,
+            InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchProviderException {
+
+        final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+        cipher.init(Cipher.ENCRYPT_MODE, groups.get(group).getKey(), iv);
+        byte[] cipherText = cipher.doFinal(message.getBytes());
+
+        return Base64.getEncoder().encodeToString(cipherText);
+    }
+
+    public boolean sendMessage(String receiverAddress,MessageDTO message) {
+        try {
+            ResponseEntity<?> response = restTemplate.exchange(receiverAddress+ "/receive/group/message",
+                    HttpMethod.POST, authenticationSetup.getHeader(message), String.class);
+            log.info("Message sent to"+receiverAddress);
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
+    public ResponseEntity<?> getGroupMessage(String group) {
+        Group group1 = groups.get(group);
+        if(group1 == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(group1.getMessages().stream().map(messageDTO -> decrypt(messageDTO, group1.getKey()))
+                .collect(Collectors.toList()));
+    }
 }

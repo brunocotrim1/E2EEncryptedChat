@@ -7,13 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class MessageController {
-
+public class ServerProbe {
 
     @GetMapping("/message")
     ResponseEntity<?> recieveMessage(@CurrentSecurityContext(expression = "authentication.principal") UserDetailsImpl userDetails) {
         return ResponseEntity.ok(userDetails);
     }
-
-
 }

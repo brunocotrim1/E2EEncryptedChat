@@ -24,13 +24,15 @@ public class Message {
     private String content;
     private byte[] iv;
     private Instant timestamp;
-
-    public Message(MessageDTO messageDTO){
+    @Enumerated(EnumType.STRING)
+    private MessageType type;
+    public Message(MessageDTO messageDTO, MessageType type) {
         this.sender = messageDTO.getSender();
         this.receiver = messageDTO.getReceiver();
         this.content = messageDTO.getContent();
         this.iv = messageDTO.getIv();
         this.timestamp = messageDTO.getTimestamp();
+        this.type = type;
     }
 
     public MessageDTO toDTO(){

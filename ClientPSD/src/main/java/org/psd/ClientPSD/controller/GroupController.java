@@ -3,12 +3,10 @@ package org.psd.ClientPSD.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.psd.ClientPSD.model.network.CreateGroup;
+import org.psd.ClientPSD.model.network.MessageDTO;
 import org.psd.ClientPSD.service.GroupService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,4 +25,23 @@ public class GroupController {
         log.info("Subscribe to topic: " + topic);
         return groupService.accessGroup(topic);
     }
+
+    @PostMapping("/receive/group/message")
+    public ResponseEntity<?> receiveMessage(@RequestBody MessageDTO messageDTO, @RequestHeader("Authorization") String bearerToken) {
+        return groupService.receiveGroupMsg(messageDTO);
+    }
+
+    @GetMapping("/messages/group/{group}")
+    public ResponseEntity<?> getMessages(@PathVariable String group) {
+        return groupService.getGroupMessage(group);
+    }
+
+    @PostMapping("/send/message/group/{group}")
+    public ResponseEntity<?> sendMessage(@PathVariable String group, @RequestBody String message) {
+        if(group == null)
+            return ResponseEntity.badRequest().build();
+        return groupService.sendMessage(message,group);
+    }
+
+
 }

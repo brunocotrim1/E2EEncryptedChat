@@ -66,4 +66,22 @@ public class ShareController {
             return ResponseEntity.badRequest().build();
         return ResponseEntity.ok(shareService.getMessages(user1,user2));
     }
+
+    @PostMapping("/receive/group/message")
+    public ResponseEntity<?> storeMessageGroup(@RequestBody MessageDTO messageDTO,@RequestHeader("Authorization") String bearerToken) {
+
+        String user = validationService.verifyToken(bearerToken);
+        if(user == null)
+            return ResponseEntity.badRequest().build();
+        return shareService.storeMessageGroup(messageDTO,user) ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/messages/group/{group}")
+    public ResponseEntity<?> getMessagesGroup(@PathVariable String group,@RequestHeader("Authorization") String bearerToken) {
+        String user2 = validationService.verifyToken(bearerToken);
+        if(user2 == null)
+            return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(shareService.getMessagesGroup(group));
+    }
+
 }
