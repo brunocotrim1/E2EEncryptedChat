@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class GroupController {
 
     private final GroupService groupService;
-
     @GetMapping("/create/topic")
     public ResponseEntity<?> getShare(@RequestBody CreateGroup group) {
         return groupService.createGroup(group);
@@ -43,5 +42,9 @@ public class GroupController {
         return groupService.sendMessage(message,group);
     }
 
+    @GetMapping("/search/group/{group}/{word}")
+    public ResponseEntity<?> getMessagesFromFriend(@PathVariable String group,@PathVariable String word) {
+        return  ResponseEntity.ok(groupService.searchMessagesFromGroup(group,word));
+    }
 
 }

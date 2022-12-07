@@ -17,8 +17,7 @@ import java.time.Instant;
 public class Message {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private String id;
     private String sender;
     private String receiver;
     private String content;
@@ -27,6 +26,7 @@ public class Message {
     @Enumerated(EnumType.STRING)
     private MessageType type;
     public Message(MessageDTO messageDTO, MessageType type) {
+        this.id = messageDTO.getId();
         this.sender = messageDTO.getSender();
         this.receiver = messageDTO.getReceiver();
         this.content = messageDTO.getContent();
@@ -37,6 +37,7 @@ public class Message {
 
     public MessageDTO toDTO(){
         return MessageDTO.builder()
+                .id(this.id)
                 .sender(this.sender)
                 .receiver(this.receiver)
                 .content(this.content)

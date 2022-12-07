@@ -10,6 +10,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 public class MessageUI {
+    private String id;
     private String sender;
     private String receiver;
     private String content;

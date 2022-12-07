@@ -19,10 +19,7 @@ import javax.crypto.*;
 import javax.crypto.spec.IvParameterSpec;
 import java.security.*;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,12 +33,14 @@ public class CryptoService {
     AuthenticationSetup authenticationSetup;
 
     IBECypherService ibeCypherService;
-
-    public CryptoService(RestTemplate restTemplate, Properties properties, AuthenticationSetup authenticationSetup,IBECypherService ibeCypherService) {
+    DynamicSSE dynamicSSE;
+    public CryptoService(RestTemplate restTemplate, Properties properties, AuthenticationSetup authenticationSetup,
+                         IBECypherService ibeCypherService,DynamicSSE dynamicSSE) {
         this.ibeCypherService = ibeCypherService;
         this.restTemplate = restTemplate;
         this.properties = properties;
         this.authenticationSetup = authenticationSetup;
+        this.dynamicSSE = dynamicSSE;
     }
 
 
@@ -281,6 +280,7 @@ public class CryptoService {
             IvParameterSpec iv = generateIv();
             String encryptedMessage = encrypt(message, receiver,iv);
             MessageDTO messageDTO = MessageDTO.builder()
+                    .id(UUID.randomUUID().toString())
                     .receiver(receiver)
                     .sender(properties.getUser())
                     .content(encryptedMessage)
@@ -292,6 +292,10 @@ public class CryptoService {
             }
             if(sendMessage(properties.getCloudAddress(),messageDTO)){
                 log.info("Message sent to cloud");
+                String[] splited = message.split("\\s+");
+                for(String s:splited){
+                    dynamicSSE.update(s,messageDTO.getId(),friends.get(receiver).getSecretKey());
+                }
             }
             friend.getMessages().add(messageDTO);
             return messageDTO;
@@ -299,6 +303,7 @@ public class CryptoService {
             return null;
         }
     }
+
 
     public boolean sendMessage(String receiverAddress,MessageDTO message) {
         try {
@@ -369,6 +374,7 @@ public class CryptoService {
             byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(message.getContent()));
 
             return MessageUI.builder()
+                    .id(message.getId())
                     .content(new String(plainText))
                     .sender(message.getSender())
                     .receiver(message.getReceiver())
@@ -379,6 +385,21 @@ public class CryptoService {
         }
     }
 
-
+    public List<MessageUI> searchMessagesFromFriend(String friend,String word) {
+        Friend f = friends.get(friend);
+        if(f == null)
+            return null;
+        try {
+            List<MessageDTO> messages = messages = dynamicSSE.search(word,f.getSecretKey());
+            return messages.stream().map(message -> {
+                log.info("Encrypted message: "+ message);
+                MessageUI messageUI = decrypt(message,f.getSecretKey());
+                log.info("Decrypted message: "+messageUI);
+                return messageUI;
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
 }

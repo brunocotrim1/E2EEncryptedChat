@@ -13,6 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageDTO {
+    private String id;
     private String sender;
     private String receiver;
     private String content;

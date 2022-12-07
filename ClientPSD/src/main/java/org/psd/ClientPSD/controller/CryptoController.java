@@ -16,7 +16,6 @@ public class CryptoController {
     CryptoService cryptoService;
     @Autowired
     Properties properties;
-
     @PostMapping("/share")
     public ResponseEntity<?> receiveShare(@RequestBody Share share, @RequestHeader("Authorization") String bearerToken) {
         return  cryptoService.receiveShare(share, bearerToken) ? ResponseEntity.ok("Share stored") : ResponseEntity.badRequest().build();
@@ -75,6 +74,10 @@ public class CryptoController {
         if(user2 == null)
             return ResponseEntity.badRequest().build();
         return  ResponseEntity.ok(cryptoService.getMessagesDTO(user2));
+    }
+    @GetMapping("/search/{user2}/{word}")
+    public ResponseEntity<?> getMessagesFromFriend(@PathVariable String user2,@PathVariable String word) {
+        return  ResponseEntity.ok(cryptoService.searchMessagesFromFriend(user2,word));
     }
 
 }

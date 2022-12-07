@@ -41,13 +41,14 @@ public class GroupService {
     private final AuthenticationSetup authenticationSetup;
     private HashMap<String, Group> groups= new HashMap<>();
     private KPABEEngine engine = KPABEGPSW06aEngine.getInstance();
+    private final DynamicSSE dynamicSSE;
 
 
-
-    public GroupService(RestTemplate restTemplate, Properties properties, AuthenticationSetup authenticationSetup){
+    public GroupService(RestTemplate restTemplate, Properties properties, AuthenticationSetup authenticationSetup, DynamicSSE dynamicSSE){
         this.restTemplate = restTemplate;
         this.properties = properties;
         this.authenticationSetup = authenticationSetup;
+        this.dynamicSSE = dynamicSSE;
         ClassPathResource cpr = new ClassPathResource("a_160_512.properties");
         PairingParameters pairingParameters = PairingFactory.getPairingParameters(cpr.getPath());
         PairingKeySerPair keyPair = engine.setup(pairingParameters, 50);//50=max attributes nº
@@ -142,6 +143,7 @@ public class GroupService {
             IvParameterSpec iv = generateIv();
             String encryptedMessage = encrypt(message, groupName,iv);
             MessageDTO messageDTO = MessageDTO.builder()
+                    .id(UUID.randomUUID().toString())
                     .receiver(groupName)
                     .sender(properties.getUser())
                     .content(encryptedMessage)
@@ -149,17 +151,22 @@ public class GroupService {
                     .iv(iv.getIV())
                     .build();
             for(String address : group.getParticipantsAddresses()){
-                if(address.equals(properties.getUser()))
+                if(address.equals(properties.getAddress()))
                     continue;
                 sendMessage(address, messageDTO);
                 log.info("Message sent to: "+address);
             }
             if(sendMessage(properties.getCloudAddress(),messageDTO)){
                 log.info("Message sent to cloud");
+                String[] splited = message.split("\\s+");
+                for(String s:splited){
+                    dynamicSSE.update(s,messageDTO.getId(),groups.get(groupName).getKey());
+                }
             }
             group.getMessages().add(messageDTO);
             return ResponseEntity.ok().body(messageDTO);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.notFound().build();
         }
     }
@@ -188,6 +195,7 @@ public class GroupService {
             byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(message.getContent()));
 
             return MessageUI.builder()
+                    .id(message.getId())
                     .content(new String(plainText))
                     .sender(message.getSender())
                     .receiver(message.getReceiver())
@@ -216,6 +224,7 @@ public class GroupService {
             log.info("Message sent to"+receiverAddress);
             return true;
         } catch (Exception exception) {
+            exception.printStackTrace();
             return false;
         }
     }
@@ -227,4 +236,29 @@ public class GroupService {
         return ResponseEntity.ok(group1.getMessages().stream().map(messageDTO -> decrypt(messageDTO, group1.getKey()))
                 .collect(Collectors.toList()));
     }
+
+    public List<MessageUI> searchMessagesFromGroup(String group,String word) {
+        log.info(group);
+        log.info(groups.keySet().toString());
+        Group group1 = groups.get(group);
+        if(group1 == null) {
+            log.info("Group not found");
+            return new ArrayList<>();
+        }
+        try {
+            List<MessageDTO> messages = messages = dynamicSSE.search(word,group1.getKey());
+            log.info("Messages found: "+messages);
+            return messages.stream().map(message -> {
+                log.info("Encrypted message: "+ message);
+                MessageUI messageUI = decrypt(message,group1.getKey());
+                log.info("Decrypted message: "+messageUI);
+                return messageUI;
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+
+
 }
