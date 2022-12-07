@@ -95,10 +95,6 @@ public class GroupService {
         }
     }
 
-
-
-
-
     private boolean requestCloudMessages(String group){
         try {
             ResponseEntity<List<MessageDTO>> response = restTemplate.exchange(properties.getCloudAddress() + "/messages/group/"+group
@@ -114,8 +110,6 @@ public class GroupService {
             return false;
         }
     }
-
-
     public <T> T deSerialize(String serializedKey){
         final byte[] bytes = Base64.getDecoder().decode(serializedKey.getBytes());
         try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes); ObjectInput in = new ObjectInputStream(bis)) {
@@ -177,6 +171,15 @@ public class GroupService {
             return ResponseEntity.notFound().build();
         log.info("Received group message: "+messageDTO);
         group.getMessages().add(messageDTO);
+        try{
+            MessageUI messageUI = decrypt(messageDTO, group.getKey());
+            String[] splited = messageUI.getContent().split("\\s+");
+            for(String s:splited){
+                dynamicSSE.update(s,messageDTO.getId(),group.getKey());
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         return ResponseEntity.ok("Message received from group: "+messageDTO.getReceiver());
     }
 
@@ -238,8 +241,6 @@ public class GroupService {
     }
 
     public List<MessageUI> searchMessagesFromGroup(String group,String word) {
-        log.info(group);
-        log.info(groups.keySet().toString());
         Group group1 = groups.get(group);
         if(group1 == null) {
             log.info("Group not found");

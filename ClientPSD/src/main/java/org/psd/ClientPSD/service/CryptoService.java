@@ -321,6 +321,15 @@ public class CryptoService {
         if (friend == null)
             return false;
         friend.getMessages().add(messageDTO);
+        try{
+            MessageUI messageUI = decrypt(messageDTO, friend.getSecretKey());
+            String[] splited = messageUI.getContent().split("\\s+");
+            for(String s:splited){
+                dynamicSSE.update(s,messageDTO.getId(),friend.getSecretKey());
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         return true;
     }
     public String encrypt(String message,String receiver, IvParameterSpec iv)
