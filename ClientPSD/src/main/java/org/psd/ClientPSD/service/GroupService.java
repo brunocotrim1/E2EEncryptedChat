@@ -104,6 +104,18 @@ public class GroupService {
             if(response.getBody().size() == 0)
                 return false;
             groups.get(group).getMessages().addAll(response.getBody());
+
+            for(MessageDTO message : response.getBody()){
+                try{
+                    MessageUI messageUI = decrypt(message,  groups.get(group).getKey());
+                    String[] splited = messageUI.getContent().split("\\s+");
+                    for(String s:splited){
+                        dynamicSSE.update(s,message.getId(), groups.get(group).getKey());
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
             log.info("Messages received from cloud:"+response.getBody().toString());
             return true;
         } catch (Exception exception) {

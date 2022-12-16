@@ -180,6 +180,17 @@ public class CryptoService {
             if(response.getBody().size() == 0)
                 return false;
             friends.get(user2).setMessages(response.getBody());
+            for(MessageDTO message : response.getBody()){
+                try{
+                    MessageUI messageUI = decrypt(message,  friends.get(user2).getSecretKey());
+                    String[] splited = messageUI.getContent().split("\\s+");
+                    for(String s:splited){
+                        dynamicSSE.update(s,message.getId(), friends.get(user2).getSecretKey());
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
             log.info("Messages received from cloud:"+response.getBody().toString());
             return true;
         } catch (Exception exception) {
@@ -194,6 +205,17 @@ public class CryptoService {
             if(response.getBody().size() == 0)
                 return false;
             friends.get(user2).setMessages(response.getBody());
+            for(MessageDTO message : response.getBody()){
+                try{
+                    MessageUI messageUI = decrypt(message,  friends.get(user2).getSecretKey());
+                    String[] splited = messageUI.getContent().split("\\s+");
+                    for(String s:splited){
+                        dynamicSSE.update(s,message.getId(), friends.get(user2).getSecretKey());
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
             log.info("Messages received from friend:"+response.getBody().toString());
             return true;
         } catch (Exception exception) {

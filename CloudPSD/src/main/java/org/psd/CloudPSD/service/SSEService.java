@@ -10,14 +10,12 @@ import org.psd.CloudPSD.repositories.IMessageRepository;
 import org.psd.CloudPSD.repositories.ISSERepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.transaction.Transactional;
-import javax.xml.ws.Response;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -40,7 +38,7 @@ public class SSEService {
         sseRepository.deleteAllByUsername(username);
     }
 
-   @Transactional
+    @Transactional
     public ResponseEntity<?> update(SseDTO sseDTO,String username) {
         try {
             SSETable sseTable = SSETable.builder().username(username)
