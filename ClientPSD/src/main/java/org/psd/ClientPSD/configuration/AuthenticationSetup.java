@@ -97,8 +97,10 @@ public class AuthenticationSetup {
             return;
         try {
             ResponseEntity<SignupResponse> response = restTemplate.exchange(properties.getServerAddress() + "/api/auth/refresh/" + refreshToken, HttpMethod.GET, null, SignupResponse.class);
+            accessToken = response.getBody().getToken();
         }
         catch (Exception e){
+            e.printStackTrace();
             register();
             login();
         }finally {

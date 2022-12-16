@@ -4,10 +4,13 @@ import org.psd.ClientPSD.configuration.Properties;
 import org.psd.ClientPSD.model.Share;
 import org.psd.ClientPSD.model.network.AddRequest;
 import org.psd.ClientPSD.model.network.MessageDTO;
+import org.psd.ClientPSD.model.network.MessageUI;
 import org.psd.ClientPSD.service.CryptoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class CryptoController {
@@ -65,7 +68,8 @@ public class CryptoController {
     public ResponseEntity<?> getMessages(@PathVariable String user2) {
         if(user2 == null)
             return ResponseEntity.badRequest().build();
-        return  ResponseEntity.ok(cryptoService.getMessages(user2));
+        List<MessageUI> messages = cryptoService.getMessages(user2);
+        return messages == null ? ResponseEntity.badRequest().body("Friend not added") : ResponseEntity.ok(messages);
     }
 
     @GetMapping("/messages")
