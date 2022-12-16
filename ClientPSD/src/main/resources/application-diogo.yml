@@ -1,10 +1,10 @@
 server:
   port: 8083
   ssl:
-    key-store: classpath:jose_keystore.jks
-    key-store-password: jose123
+    key-store: classpath:diogo_keystore.jks
+    key-store-password: diogo123
     keyStoreType: JKS
-    keyAlias: jose
+    keyAlias: diogo
 app:
   serverAddress: "https://localhost:8080"
   user: diogo

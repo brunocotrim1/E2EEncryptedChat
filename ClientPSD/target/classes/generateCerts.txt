@@ -5,9 +5,9 @@ keytool -import -file bruno.cert -alias bruno -keystore bruno_truststore.jks
 
 
 
-keytool -genkey -alias jose -keyalg RSA -keystore jose_keystore.jks -keysize 2048
-keytool -export -alias jose -keystore jose_keystore.jks -file jose.cert
-keytool -import -file jose.cert -alias jose -keystore jose_truststore.jks
+keytool -genkey -alias diogo -keyalg RSA -keystore diogo_keystore.jks -keysize 2048
+keytool -export -alias diogo -keystore diogo_keystore.jks -file diogo.cert
+keytool -import -file diogo.cert -alias diogo -keystore diogo_truststore.jks
 
 keytool -genkey -alias miguel -keyalg RSA -keystore miguel_keystore.jks -keysize 2048
 keytool -export -alias miguel -keystore miguel_keystore.jks -file miguel.cert
