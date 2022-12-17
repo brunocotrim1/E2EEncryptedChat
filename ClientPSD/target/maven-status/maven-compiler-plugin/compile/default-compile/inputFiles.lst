@@ -1,17 +1,28 @@
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\AddRequest.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\SignupRequest.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\service\CryptoService.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\ClientPSDApplication.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\controller\CryptoController.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\crypto\SecretSharing.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\service\IBECypherService.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\configuration\Properties.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\model\Friend.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\SignupResponse.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\configuration\AuthenticationSetup.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\SigninResponse.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\configuration\HttpsRestConfig.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\controller\TestController.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\model\IBEFriendEncapsulation.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\model\Share.java
-C:\Users\Bruno Cotrim\IdeaProjects\PSD\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\IBEKeySharing.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\service\GroupService.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\service\IBECypherService.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\configuration\Properties.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\Share.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\CreateGroup.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\Direction.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\IBEKeySharing.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\crypto\SecretSharing.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\service\DynamicSSE.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\configuration\HttpsRestConfig.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\configuration\AuthenticationSetup.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\controller\GroupController.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\AddRequest.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\IBEFriendEncapsulation.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\SignupRequest.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\ABEKeySharing.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\MessageDTO.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\Friend.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\SignupResponse.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\service\CryptoService.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\MessageUI.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\controller\TestController.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\SseDTO.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\Group.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\ClientPSDApplication.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\controller\CryptoController.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\MessageReplicaDTO.java
+C:\FCUL\PSD\Project\E2EEncryptedChat\ClientPSD\src\main\java\org\psd\ClientPSD\model\network\SigninResponse.java

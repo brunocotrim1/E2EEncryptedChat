@@ -1,6 +1,5 @@
 package org.psd.CloudPSD.service;
 
-import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.psd.CloudPSD.models.Message;
 import org.psd.CloudPSD.models.SSETable;
@@ -8,6 +7,7 @@ import org.psd.CloudPSD.models.network.MessageDTO;
 import org.psd.CloudPSD.models.network.SseDTO;
 import org.psd.CloudPSD.repositories.IMessageRepository;
 import org.psd.CloudPSD.repositories.ISSERepository;
+import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import javax.crypto.Cipher;
@@ -61,19 +61,19 @@ public class SSEService {
         SecretKey prfKey2 = decodeToKey(sseDTO.getValue2());
 
         List<MessageDTO> indexesToReturn = new ArrayList<>();
-        Integer c = new Integer(0);
+        int c = 0;
         while(true){
             List<MessageDTO> result = new ArrayList<>();
-            SecretKey indexLabel = pseudoRandomFunction(prfKey,new byte[]{c.byteValue()});
+            SecretKey indexLabel = pseudoRandomFunction(prfKey,new byte[]{(byte) c});
             Pair<byte[],byte[]> indexValueAndIV = indexMap.get(Base64.getEncoder().encodeToString(indexLabel.getEncoded()));
             //pairKey e o indexValue encriptado e o value e o IV
             if(indexValueAndIV ==null){
                 log.info("IndexValue reached an end");
                 break;
             }
-            byte [] indexValue = indexValueAndIV.getKey();
+            byte [] indexValue = indexValueAndIV.getFirst();
             try {
-                Message message = decrypt(indexValue,prfKey2,indexValueAndIV.getValue());
+                Message message = decrypt(indexValue,prfKey2,indexValueAndIV.getSecond());
                 if(message != null){
                     result.add(message.toDTO());
                 }
@@ -101,7 +101,7 @@ public class SSEService {
     private HashMap<String, Pair<byte[],byte[]>> listToMap(List<SSETable> sseTables){
         HashMap<String,Pair<byte[],byte[]>> map = new HashMap<>();
         for(SSETable sseTable:sseTables){
-            map.put(sseTable.getIndexLabel(),new Pair<>(sseTable.getIndexValue(),sseTable.getIv()));
+            map.put(sseTable.getIndexLabel(), Pair.of(sseTable.getIndexValue(), sseTable.getIv()));
         }
         return map;
     }
@@ -111,7 +111,8 @@ public class SSEService {
     }
 
     public Message decrypt(byte[] cipherText, SecretKey key, byte[]iv) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+        System.out.println("IV LENGTH -> " + iv.length);
         cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
         byte[] plainText = cipher.doFinal(cipherText);
         String messageId = new String(plainText);
