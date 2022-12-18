@@ -111,7 +111,7 @@ public class SSEService {
     }
 
     public Message decrypt(byte[] cipherText, SecretKey key, byte[]iv) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding","BC");
         cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
         byte[] plainText = cipher.doFinal(cipherText);
         String messageId = new String(plainText);
